@@ -1,0 +1,258 @@
+/* ============================================================
+   CONTACT.CSS — hanya style khusus halaman contact
+   Navbar, footer, dan theme variables sudah ada di style.css
+   ============================================================ */
+
+/* MAIN LAYOUT */
+.contact-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 48px 80px; /* 100px top = 64px navbar + 36px napas */
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 56px;
+  align-items: start;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── LEFT COLUMN ── */
+.contact-label {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.info-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  transition: border-color .3s;
+}
+.info-card:hover { border-color: var(--accent); }
+
+.icon-wrap {
+  width: 40px;
+  height: 40px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon-wrap i { color: var(--accent-light); font-size: 17px; }
+
+.info-type {
+  font-size: 9.5px;
+  letter-spacing: 1.8px;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-family: 'Orbitron', sans-serif;
+}
+.info-val {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.65;
+  font-family: 'Inter', sans-serif;
+}
+
+.contact-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+  transition: background .4s;
+}
+
+.social-row {
+  display: flex;
+  gap: 10px;
+}
+.soc-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .25s;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.soc-btn:hover {
+  border-color: var(--accent-light);
+  background: var(--accent-soft);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.soc-btn i { color: var(--muted); font-size: 17px; transition: color .2s; }
+.soc-btn:hover i { color: var(--accent-light); }
+
+/* ── RIGHT COLUMN ── */
+.heading {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 36px;
+}
+.heading em { color: var(--accent-light); font-style: normal; transition: color .4s; }
+.deco-star {
+  display: inline-block;
+  color: rgba(255,255,255,0.15);
+  font-size: 28px;
+  margin-left: 12px;
+  animation: contactSpin 8s linear infinite;
+}
+@keyframes contactSpin { to { transform: rotate(360deg); } }
+
+/* ── FORM ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-group { position: relative; }
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 13px 16px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+  transition: border-color .3s, box-shadow .3s;
+  outline: none;
+  resize: none;
+}
+input::placeholder, textarea::placeholder { color: var(--muted); }
+input:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+input.error-field, textarea.error-field {
+  border-color: #f87171;
+}
+textarea { height: 140px; }
+
+.err-msg {
+  font-size: 11px;
+  color: #f87171;
+  margin-top: 5px;
+  display: none;
+  font-family: 'Inter', sans-serif;
+}
+.err-msg.show { display: block; }
+
+.btn-send {
+  grid-column: 1 / -1;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--accent-light);
+  color: var(--white);
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all .3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-send::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s;
+  z-index: -1;
+}
+.btn-send:hover::before { transform: scaleX(1); }
+.btn-send:hover { box-shadow: 0 0 20px var(--accent-glow); }
+.btn-send:disabled { opacity: .5; cursor: not-allowed; }
+.btn-send i { font-size: 18px; }
+
+/* ── TOAST ── */
+.toast-wrap {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  z-index: 9999;
+  transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity: 0;
+  pointer-events: none;
+}
+.toast-wrap.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.toast {
+  background: var(--accent);
+  color: #fff;
+  padding: 13px 28px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  box-shadow: 0 8px 32px var(--accent-glow);
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: .5px;
+}
+.toast.error-toast {
+  background: #dc2626;
+  box-shadow: 0 8px 32px rgba(220,38,38,.4);
+}
+.toast i { font-size: 18px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .contact-main {
+    grid-template-columns: 1fr;
+    padding: 90px 20px 60px;
+    gap: 40px;
+  }
+  .heading { font-size: 32px; }
+  .form-grid { grid-template-columns: 1fr; }
+}
