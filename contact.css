@@ -7,7 +7,7 @@
 .contact-main {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 100px 48px 80px; /* 100px top = 64px navbar + 36px napas */
+  padding: 100px 48px 80px;
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 56px;
@@ -73,22 +73,13 @@
   transition: background .4s;
 }
 
-.social-row {
-  display: flex;
-  gap: 10px;
-}
+.social-row { display: flex; gap: 10px; }
 .soc-btn {
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
   background: var(--card);
   border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all .25s;
-  text-decoration: none;
-  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .25s; text-decoration: none; border-radius: 6px;
 }
 .soc-btn:hover {
   border-color: var(--accent-light);
@@ -158,17 +149,12 @@ input:focus, textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 14px var(--accent-glow);
 }
-input.error-field, textarea.error-field {
-  border-color: #f87171;
-}
+input.error-field, textarea.error-field { border-color: #f87171; }
 textarea { height: 140px; }
 
 .err-msg {
-  font-size: 11px;
-  color: #f87171;
-  margin-top: 5px;
-  display: none;
-  font-family: 'Inter', sans-serif;
+  font-size: 11px; color: #f87171; margin-top: 5px;
+  display: none; font-family: 'Inter', sans-serif;
 }
 .err-msg.show { display: block; }
 
@@ -179,30 +165,16 @@ textarea { height: 140px; }
   border: 1px solid var(--accent-light);
   color: var(--white);
   padding: 14px 24px;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 14px; font-weight: 700;
   font-family: 'Rajdhani', sans-serif;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  margin-top: 4px;
-  transition: all .3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  position: relative;
-  overflow: hidden;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; margin-top: 4px; transition: all .3s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  position: relative; overflow: hidden;
 }
 .btn-send::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .3s;
-  z-index: -1;
+  content: ''; position: absolute; inset: 0; background: var(--accent);
+  transform: scaleX(0); transform-origin: left; transition: transform .3s; z-index: -1;
 }
 .btn-send:hover::before { transform: scaleX(1); }
 .btn-send:hover { box-shadow: 0 0 20px var(--accent-glow); }
@@ -211,48 +183,52 @@ textarea { height: 140px; }
 
 /* ── TOAST ── */
 .toast-wrap {
-  position: fixed;
-  bottom: 32px;
-  left: 50%;
+  position: fixed; bottom: 32px; left: 50%;
   transform: translateX(-50%) translateY(80px);
-  z-index: 9999;
-  transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
-  opacity: 0;
-  pointer-events: none;
+  z-index: 9999; transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity: 0; pointer-events: none;
 }
-.toast-wrap.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
+.toast-wrap.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
 .toast {
-  background: var(--accent);
-  color: #fff;
-  padding: 13px 28px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  white-space: nowrap;
-  box-shadow: 0 8px 32px var(--accent-glow);
-  font-family: 'Rajdhani', sans-serif;
-  letter-spacing: .5px;
+  background: var(--accent); color: #fff;
+  padding: 13px 28px; border-radius: 999px;
+  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 9px;
+  white-space: nowrap; box-shadow: 0 8px 32px var(--accent-glow);
+  font-family: 'Rajdhani', sans-serif; letter-spacing: .5px;
 }
-.toast.error-toast {
-  background: #dc2626;
-  box-shadow: 0 8px 32px rgba(220,38,38,.4);
-}
+.toast.error-toast { background: #dc2626; box-shadow: 0 8px 32px rgba(220,38,38,.4); }
 .toast i { font-size: 18px; }
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE TABLET ── */
+@media (max-width: 900px) {
+  .contact-main {
+    grid-template-columns: 220px 1fr;
+    padding: 90px 32px 60px;
+    gap: 36px;
+  }
+  .heading { font-size: 32px; }
+}
+
+/* ── RESPONSIVE MOBILE ── */
 @media (max-width: 768px) {
   .contact-main {
     grid-template-columns: 1fr;
     padding: 90px 20px 60px;
-    gap: 40px;
+    gap: 36px;
   }
-  .heading { font-size: 32px; }
+  .heading { font-size: 28px; margin-bottom: 24px; }
   .form-grid { grid-template-columns: 1fr; }
+
+  /* Buat info card lebih compact */
+  .info-card { padding: 12px; }
+  .info-val  { font-size: 12px; word-break: break-word; }
+
+  /* Toast jangan overflow */
+  .toast { white-space: normal; text-align: center; max-width: calc(100vw - 40px); }
+}
+
+@media (max-width: 480px) {
+  .heading { font-size: 22px; }
+  .deco-star { font-size: 18px; }
 }
