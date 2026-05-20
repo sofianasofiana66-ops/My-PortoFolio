@@ -51,21 +51,58 @@ document.querySelectorAll('.about-card').forEach(card => {
   card.querySelectorAll('.skill-bar-fill').forEach(bar => bar.style.width = '0%');
 });
 
-// ===== CAROUSEL =====
+// ===== CAROUSEL (RESPONSIVE) =====
 const track   = document.getElementById('carouselTrack');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const cards   = track.querySelectorAll('.project-card');
 let currentIndex = 0;
-const maxIndex = cards.length - 3;
+
+function getVisibleCards() {
+  if (window.innerWidth <= 768) return 1;
+  if (window.innerWidth <= 1024) return 2;
+  return 3;
+}
+
+function getMaxIndex() {
+  return Math.max(0, cards.length - getVisibleCards());
+}
 
 function updateCarousel() {
+  // Clamp currentIndex jika layar berubah ukuran
+  const max = getMaxIndex();
+  if (currentIndex > max) currentIndex = max;
+
   const cardWidth = cards[0].getBoundingClientRect().width + 20;
   track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+
+  // Update tombol arrow
+  prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+  prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
+  nextBtn.style.opacity = currentIndex >= max ? '0.3' : '1';
+  nextBtn.style.pointerEvents = currentIndex >= max ? 'none' : 'auto';
 }
-prevBtn.addEventListener('click', () => { if (currentIndex > 0) currentIndex--; updateCarousel(); });
-nextBtn.addEventListener('click', () => { if (currentIndex < maxIndex) currentIndex++; updateCarousel(); });
+
+prevBtn.addEventListener('click', () => {
+  if (currentIndex > 0) { currentIndex--; updateCarousel(); }
+});
+nextBtn.addEventListener('click', () => {
+  if (currentIndex < getMaxIndex()) { currentIndex++; updateCarousel(); }
+});
 window.addEventListener('resize', updateCarousel);
+
+// Touch/swipe support untuk carousel di mobile
+let touchStartX = 0;
+track.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+track.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0 && currentIndex < getMaxIndex()) { currentIndex++; updateCarousel(); }
+    if (diff < 0 && currentIndex > 0)             { currentIndex--; updateCarousel(); }
+  }
+}, { passive: true });
 
 // ===== NAVIGASI =====
 const menuBtn         = document.getElementById('menuBtn');
@@ -167,7 +204,6 @@ document.addEventListener('keydown', (e) => {
 
 
 // ===== ROBOT ANIMASI =====
-// Deklarasi variabel robot dulu sebelum dipakai fungsi manapun
 const robotSVG      = document.getElementById('robotSVG');
 const robotHead     = document.getElementById('robotHead');
 const eyePupilLeft  = document.getElementById('eyePupilLeft');
@@ -182,7 +218,7 @@ const scanLine      = document.getElementById('scanLine');
 const laserDot      = document.getElementById('laserDot');
 const robotWrapper  = document.querySelector('.robot-wrapper');
 
-// ===== TEMA WARNA (setelah variabel robot dideklarasikan) =====
+// ===== TEMA WARNA =====
 function setTheme(tema, btn) {
   document.body.className = 'theme-' + tema;
   document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
@@ -196,7 +232,6 @@ function updateRobotColors() {
   const accent      = style.getPropertyValue('--accent').trim();
   const accentLight = style.getPropertyValue('--accent-light').trim();
 
-  // Update semua stroke yang pakai warna accent lama
   document.querySelectorAll('#robotSVG [stroke]').forEach(el => {
     const stroke = el.getAttribute('stroke');
     if (stroke && (
@@ -213,7 +248,6 @@ function updateRobotColors() {
     }
   });
 
-  // Update semua fill yang pakai warna accent lama
   document.querySelectorAll('#robotSVG [fill]').forEach(el => {
     const fill = el.getAttribute('fill');
     if (fill && (
@@ -224,56 +258,48 @@ function updateRobotColors() {
     }
   });
 
-  // Update teks AF di badan robot
   const afText = document.querySelector('#robotSVG text');
   if (afText) afText.setAttribute('fill', accent);
 
-  // Update gradient mata
   const eyeGradStops = document.querySelectorAll('#eyeGrad stop');
   if (eyeGradStops.length >= 2) {
     eyeGradStops[0].setAttribute('stop-color', accentLight);
     eyeGradStops[1].setAttribute('stop-color', accent);
   }
 
-  // Update reactor dan antena
   antennaTip.setAttribute('fill', 'url(#eyeGrad)');
   reactorCore.setAttribute('fill', accentLight);
 
-  // Update border robot-ring (elemen HTML bukan SVG)
   document.querySelectorAll('.robot-ring').forEach(ring => {
     ring.style.borderColor = accent.replace(')', ', 0.3)').replace('rgb', 'rgba');
   });
 
-  // Update glow background robot
   const glowBg = document.querySelector('.robot-glow-bg');
   if (glowBg) {
     glowBg.style.background = `radial-gradient(circle, ${accent}40 0%, transparent 70%)`;
   }
 
-  // Update laser dot cursor
-const laserDot = document.getElementById('laserDot');
-if (laserDot) {
-  laserDot.style.background = `radial-gradient(circle, ${accentLight}, ${accent})`;
-  laserDot.style.boxShadow = `0 0 12px ${accent}, 0 0 24px ${accent}40`;
-}
-
-// Update warna stroke badan robot (semua rgba hardcode)
-document.querySelectorAll('#robotSVG [stroke]').forEach(el => {
-  const stroke = el.getAttribute('stroke');
-  if (stroke && stroke.startsWith('rgba(124')) el.setAttribute('stroke', accent.replace(')', ', 0.3)').replace('rgb(', 'rgba('));
-  if (stroke && stroke.startsWith('rgba(168')) el.setAttribute('stroke', accentLight.replace(')', ', 0.3)').replace('rgb(', 'rgba('));
-});
-
-// Update warna fill badan (rgba hardcode)
-document.querySelectorAll('#robotSVG [fill]').forEach(el => {
-  const fill = el.getAttribute('fill');
-  if (fill && fill.startsWith('rgba(124,58,237')) {
-    el.setAttribute('fill', fill.replace('124,58,237', getRGBFromHex(accent)));
+  const laserDotEl = document.getElementById('laserDot');
+  if (laserDotEl) {
+    laserDotEl.style.background = `radial-gradient(circle, ${accentLight}, ${accent})`;
+    laserDotEl.style.boxShadow = `0 0 12px ${accent}, 0 0 24px ${accent}40`;
   }
-  if (fill && fill.startsWith('rgba(168,85,247')) {
-    el.setAttribute('fill', fill.replace('168,85,247', getRGBFromHex(accentLight)));
-  }
-});
+
+  document.querySelectorAll('#robotSVG [stroke]').forEach(el => {
+    const stroke = el.getAttribute('stroke');
+    if (stroke && stroke.startsWith('rgba(124')) el.setAttribute('stroke', accent.replace(')', ', 0.3)').replace('rgb(', 'rgba('));
+    if (stroke && stroke.startsWith('rgba(168')) el.setAttribute('stroke', accentLight.replace(')', ', 0.3)').replace('rgb(', 'rgba('));
+  });
+
+  document.querySelectorAll('#robotSVG [fill]').forEach(el => {
+    const fill = el.getAttribute('fill');
+    if (fill && fill.startsWith('rgba(124,58,237')) {
+      el.setAttribute('fill', fill.replace('124,58,237', getRGBFromHex(accent)));
+    }
+    if (fill && fill.startsWith('rgba(168,85,247')) {
+      el.setAttribute('fill', fill.replace('168,85,247', getRGBFromHex(accentLight)));
+    }
+  });
 }
 
 function getRGBFromHex(hex) {
@@ -295,8 +321,10 @@ if (temaTersimpan) {
     btn.classList.add('selected');
   }
 }
-// Panggil setelah variabel robot sudah ada
 updateRobotColors();
+
+// Robot animasi — matikan di mobile untuk performa
+const isMobile = () => window.innerWidth <= 768;
 
 let headRot = 0, eyeLX = 122, eyeLY = 112, eyeRX = 178, eyeRY = 112, bodyTilt = 0;
 let isNearRobot = false, scanY = 95, scanDir = 1, antennaFlash = 0, reactorPulse = 0;
@@ -312,6 +340,7 @@ window.addEventListener('resize', updateRobotCenter);
 window.addEventListener('scroll', updateRobotCenter);
 
 document.addEventListener('mousemove', (e) => {
+  if (isMobile()) return;
   mouseX = e.clientX; mouseY = e.clientY;
   const r = robotSVG.getBoundingClientRect();
   const diAtas = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
@@ -326,6 +355,7 @@ document.addEventListener('mousemove', (e) => {
 });
 
 document.addEventListener('click', () => {
+  if (isMobile()) return;
   antennaFlash = 1;
   laserDot.style.width = '20px'; laserDot.style.height = '20px';
   setTimeout(() => { laserDot.style.width = '12px'; laserDot.style.height = '12px'; }, 180);
@@ -335,6 +365,16 @@ function lerp(a, b, t) { return a + (b - a) * t; }
 function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }
 
 function animateRobot() {
+  // Di mobile: hanya animasi float sederhana tanpa tracking mouse
+  if (isMobile()) {
+    robotSVG.style.transform = `translateY(${Math.sin(Date.now() / 900) * 5}px)`;
+    reactorPulse += 0.05;
+    const rp = Math.sin(reactorPulse);
+    reactorCore.setAttribute('r', 5 + rp * 2);
+    requestAnimationFrame(animateRobot);
+    return;
+  }
+
   updateRobotCenter();
   const dx = mouseX - roboCX;
   headRot  = lerp(headRot,  clamp((dx / window.innerWidth) * 36, -18, 18), 0.06);
@@ -399,59 +439,58 @@ window.addEventListener('scroll', () => {
 });
 
 
-//FOOTER
- const footerPages = [
-    { label:'Home',        icon:'fa-house',       href:'#home'     },
-    { label:'About Me',    icon:'fa-user',         href:'#about'    },
-    { label:'Target',      icon:'fa-bullseye',     href:'#about'    },
-    { label:'Skills',      icon:'fa-code',         href:'#skills'   },
-    { label:'My Work',     icon:'fa-folder-open',  href:'#projects' },
-    { label:'HTML',        icon:'fa-code',         href:'#skills'   },
-    { label:'CSS',         icon:'fa-paint-brush',  href:'#skills'   },
-    { label:'JavaScript',  icon:'fa-js',           href:'#skills'   },
-    { label:'Bootstrap',   icon:'fa-bootstrap',    href:'#skills'   },
-    { label:'Tailwind CSS',icon:'fa-wind',         href:'#skills'   },
-    { label:'Landing Page',icon:'fa-rocket',       href:'#projects' },
-    { label:'Portfolio V1',icon:'fa-user-tie',     href:'#projects' },
-    { label:'Web Agency',  icon:'fa-globe',        href:'#projects' },
-    { label:'Dashboard UI',icon:'fa-chart-bar',    href:'#projects' },
-    { label:'E-Commerce',  icon:'fa-shopping-bag', href:'#projects' },
-  ];
- 
-  function footerSearch(q) {
-    const box = document.getElementById('footerSearchResults');
-    q = q.trim().toLowerCase();
-    if (!q) { box.classList.remove('show'); box.innerHTML = ''; return; }
- 
-    const hits = footerPages.filter(p => p.label.toLowerCase().includes(q));
-    if (!hits.length) {
-      box.innerHTML = '<div class="footer-search-none">Tidak ditemukan </div>';
-      box.classList.add('show');
-      return;
-    }
-    box.innerHTML = hits.slice(0,5).map(p =>
-      `<a class="footer-search-result" href="${p.href}">
-        <i class="fas ${p.icon}"></i>${p.label}
-      </a>`
-    ).join('');
-    box.classList.add('show');
-  }
- 
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.footer-search')) {
-      const box = document.getElementById('footerSearchResults');
-      if (box) { box.classList.remove('show'); }
-    }
-  });
+// ===== FOOTER SEARCH =====
+const footerPages = [
+  { label:'Home',        icon:'fa-house',       href:'#home'     },
+  { label:'About Me',    icon:'fa-user',         href:'#about'    },
+  { label:'Target',      icon:'fa-bullseye',     href:'#about'    },
+  { label:'Skills',      icon:'fa-code',         href:'#skills'   },
+  { label:'My Work',     icon:'fa-folder-open',  href:'#projects' },
+  { label:'HTML',        icon:'fa-code',         href:'#skills'   },
+  { label:'CSS',         icon:'fa-paint-brush',  href:'#skills'   },
+  { label:'JavaScript',  icon:'fa-js',           href:'#skills'   },
+  { label:'Bootstrap',   icon:'fa-bootstrap',    href:'#skills'   },
+  { label:'Tailwind CSS',icon:'fa-wind',         href:'#skills'   },
+  { label:'Landing Page',icon:'fa-rocket',       href:'#projects' },
+  { label:'Portfolio V1',icon:'fa-user-tie',     href:'#projects' },
+  { label:'Web Agency',  icon:'fa-globe',        href:'#projects' },
+  { label:'Dashboard UI',icon:'fa-chart-bar',    href:'#projects' },
+  { label:'E-Commerce',  icon:'fa-shopping-bag', href:'#projects' },
+];
 
-  // SMOOTH SCROLL dengan offset navbar
+function footerSearch(q) {
+  const box = document.getElementById('footerSearchResults');
+  q = q.trim().toLowerCase();
+  if (!q) { box.classList.remove('show'); box.innerHTML = ''; return; }
+
+  const hits = footerPages.filter(p => p.label.toLowerCase().includes(q));
+  if (!hits.length) {
+    box.innerHTML = '<div class="footer-search-none">Tidak ditemukan </div>';
+    box.classList.add('show');
+    return;
+  }
+  box.innerHTML = hits.slice(0,5).map(p =>
+    `<a class="footer-search-result" href="${p.href}">
+      <i class="fas ${p.icon}"></i>${p.label}
+    </a>`
+  ).join('');
+  box.classList.add('show');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.footer-search')) {
+    const box = document.getElementById('footerSearchResults');
+    if (box) { box.classList.remove('show'); }
+  }
+});
+
+// ===== SMOOTH SCROLL dengan offset navbar =====
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', function(e) {
     const target = document.querySelector(this.getAttribute('href'));
     if (!target) return;
     e.preventDefault();
     const navHeight = document.querySelector('nav').offsetHeight;
-    // projects butuh offset lebih besar karena ada header + cards
     const extraOffset = this.getAttribute('href') === '#projects' ? 2 : 16;
     const targetTop = target.getBoundingClientRect().top + window.scrollY - navHeight - extraOffset;
     window.scrollTo({ top: targetTop, behavior: 'smooth' });
